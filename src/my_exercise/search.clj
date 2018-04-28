@@ -6,6 +6,7 @@
             [my-exercise.ocd :as ocd]
             [ring.util.anti-forgery :refer [anti-forgery-field]]))
 
+;; TODO this page needs some refactoring and cleanup
 (def address-keys ["street" "street-2" "city" "state" "zip"])
 
 (defn params->address [params]
@@ -28,7 +29,7 @@
    [:h1 "Your input was invalid!"]
    [:p "You entered:" params]])
 
-(defn search
+(defn election-search
   "Top-level function for handling election search"
   [params]
   (let [{:strs [street street-2 city state zip]} params
@@ -39,16 +40,16 @@
 
 ;; TODO important -- make network call asynchronously and add it
 ;; to page when it comes back. Don't leave the user hanging.
-;; TODO this desperately needs formatting & prettification. But I'm nearly out
-;; of time, so I'm going to spend the rest going back and making some improvements
-(defn election-search [params]
-  [:div {:class "election-search"}
+;; TODO this desperately needs formatting & prettification -- right now it's
+;; just spitting the results of election-search out directly onto the page. But
+;; I'm nearly out of time, so I'm going to spend the rest going back and making
+;; some improvements.
+(defn election-section [params]
+  [:div {:class "election-section"}
    [:h3 "Checking for elections matching " (params->address params)] ; TODO prettify
    [:p " "]
    [:h3 "Results:"]
-   [:p (:body (search params))]
-   ]
-  )
+   [:p (:body (election-search params))]])
 
 ;; TODO better to just call params->address here and pass the address around.
 ;; don't want to stop and refactor now.
@@ -58,6 +59,6 @@
     (if valid-address-params?
       (html5
        (anti-forgery-field)
-       (election-search params))
+       (election-section params))
       (html5
        (invalid-message params)))))
