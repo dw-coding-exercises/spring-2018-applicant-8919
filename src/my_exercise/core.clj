@@ -7,6 +7,9 @@
             [my-exercise.search :as search]))
 
 ;; TODO favicon
+;; TODO check on browser, verify that page is reasonably responsive
+;; TODO CSS?
+;; TODO double check other browsers / other OSs
 
 (defroutes app
   (GET "/" [] home/page)

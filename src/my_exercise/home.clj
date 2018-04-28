@@ -103,6 +103,8 @@
     (anti-forgery-field)
     [:p "Enter the address where you are registered to vote"]
     [:div
+     ;; TODO consider instead a single "street" line with
+     ;; a user affordance to add additional lines if needed
      [:label {:for "street-field"} "Street:"]
      [:input {:id "street-field"
               :type "text"
