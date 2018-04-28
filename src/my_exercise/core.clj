@@ -6,6 +6,12 @@
             [my-exercise.home :as home]
             [my-exercise.search :as search]))
 
+;; NOTES FROM CANDIDATE:
+;; - I've sprinkled some TODOs around for stuff I would have worked on if I'd
+;;   had more time.
+
+
+
 ;; TODO favicon
 ;; TODO check on browser, verify that page is reasonably responsive
 ;; TODO CSS?
