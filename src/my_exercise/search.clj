@@ -2,58 +2,51 @@
   "Page for matching-election search results"
   (:require [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
+            [my-exercise.network :as net]
             [my-exercise.ocd :as ocd]
             [ring.util.anti-forgery :refer [anti-forgery-field]]))
 
 (def address-keys ["street" "street-2" "city" "state" "zip"])
 
 (defn params->address [params]
-  (select-keys params address-keys))
+  (if (map? params)
+    (select-keys params address-keys)
+    nil))
 
 ;; TODO more sophisticated validation
 (defn is-valid?
   "Params is valid iff it's a map, containing at least address-keys"
   [params]
-  true
-  ;; TODO commented during early dev
-  ;; (prn "params->address:" (params->address params))
-  ;; (let [address-map (params->address params)]
-  ;;   (and (map? params)
-  ;;        (>= (count address-map) (count address-keys)) ; may have extra keys
-  ;;        (not (some empty? address-map))))
-  )
+  (let [address-map (params->address params)]
+    (and (map? params)
+         (>= (count address-map) (count address-keys)) ; may have extra keys
+         (not (some empty? address-map))))) ; TODO this may not be working right
 
-;; TODO could use massive improvement
+;; TODO Really just a placeholder
 (defn invalid-message [params]
   [:div
    [:h1 "Your input was invalid!"]
    [:p "You entered:" params]])
 
-;; (defn )
-
 (defn search
   "Top-level function for handling election search"
-  [params] ; TODO
+  [params]
   (let [{:strs [street street-2 city state zip]} params
         state-ocd (ocd/state state)
         city-ocd (ocd/city state-ocd city)]
-
-    ;; TODO confirm non-nil? Or how will API do against nil vals?
-    (log/warn (str "form-params: " params))
-    (log/warn "STREET CITY ETC:")
-    (log/warn street city street-2 state zip)
-    )
-  )
+    (log/debug (str "Searching against" params))
+    (net/request-elections #{state-ocd city-ocd})))
 
 ;; TODO important -- make network call asynchronously and add it
-;; to page when it comes back
+;; to page when it comes back. Don't leave the user hanging.
+;; TODO this desperately needs formatting & prettification. But I'm nearly out
+;; of time, so I'm going to spend the rest going back and making some improvements
 (defn election-search [params]
-  ;; TODO state, eg mount? Probably not, can be stateless.
-  (def rq params) ; TODO
-  (search params)
   [:div {:class "election-search"}
-   [:p "Checking for elections matching " (params->address params)]
-   [:p "U R the man u so bad"]
+   [:h3 "Checking for elections matching " (params->address params)] ; TODO prettify
+   [:p " "]
+   [:h3 "Results:"]
+   [:p (:body (search params))]
    ]
   )
 
@@ -63,9 +56,8 @@
   (let [params (:form-params request)
         valid-address-params? (is-valid? params)]
     (if valid-address-params?
-      (do (prn "valid!")
-          (html5
-        (anti-forgery-field)
-        (election-search params)))
+      (html5
+       (anti-forgery-field)
+       (election-search params))
       (html5
        (invalid-message params)))))
