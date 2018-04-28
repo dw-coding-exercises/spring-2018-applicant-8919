@@ -1,6 +1,8 @@
 (ns my-exercise.search
+  "Page for matching-election search results"
   (:require [clojure.tools.logging :as log]
             [hiccup.page :refer [html5]]
+            [my-exercise.ocd :as ocd]
             [ring.util.anti-forgery :refer [anti-forgery-field]]))
 
 (def address-keys ["street" "street-2" "city" "state" "zip"])
@@ -30,8 +32,12 @@
 ;; (defn )
 
 (defn search
+  "Top-level function for handling election search"
   [params] ; TODO
-  (let [{:strs [street street-2 city state zip]} params]
+  (let [{:strs [street street-2 city state zip]} params
+        state-ocd (ocd/state state)
+        city-ocd (ocd/city state-ocd city)]
+
     ;; TODO confirm non-nil? Or how will API do against nil vals?
     (log/warn (str "form-params: " params))
     (log/warn "STREET CITY ETC:")
@@ -39,11 +45,14 @@
     )
   )
 
+;; TODO important -- make network call asynchronously and add it
+;; to page when it comes back
 (defn election-search [params]
   ;; TODO state, eg mount? Probably not, can be stateless.
   (def rq params) ; TODO
   (search params)
   [:div {:class "election-search"}
+   [:p "Checking for elections matching " (params->address params)]
    [:p "U R the man u so bad"]
    ]
   )
