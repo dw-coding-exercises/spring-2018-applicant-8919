@@ -15,6 +15,7 @@
     nil))
 
 ;; TODO more sophisticated validation
+;; TODO Just realized that this logic is faulty, since street-2 is optional. Fix.
 (defn is-valid?
   "Params is valid iff it's a map, containing at least address-keys"
   [params]

@@ -23,6 +23,8 @@
 ;; TODO check on browser, verify that page is reasonably responsive
 ;; TODO CSS?
 ;; TODO double check other browsers / other OSs
+;; TODO the standardization/augmentation mentioned in the task description.
+;;      Probably a few other bits in the description if I went back & reread.
 
 (defroutes app
   (GET "/" [] home/page)
